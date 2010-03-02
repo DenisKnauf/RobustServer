@@ -5,8 +5,8 @@ begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
     gem.name = "robustserver"
-    gem.summary = %Q{Protects your Server against SIGS,  unplaned exceptions and  retries last action}
-    gem.description = %Q{}
+    gem.summary = %Q{Robust Server}
+    gem.description = %Q{Protects your Server against SIGS and  unplaned exceptions}
     gem.email = "Denis.Knauf@gmail.com"
     gem.homepage = "http://github.com/DenisKnauf/robustserver"
     gem.authors = ["Denis Knauf"]
