@@ -1,35 +1,33 @@
 
-module Signal
-	def signame s
-		case s      
-		when String then s
-		when Symbol then s.to_s
-		when Fixnum then list.invert[s]
-		end                            
-	end                                    
+def Signal.signame s
+	case s      
+	when String then s
+	when Symbol then s.to_s
+	when Fixnum then list.invert[s]
+	end                            
+end                                    
 
-	def sig s
-		case s  
-		when Fixnum then s
-		when String then list[s]
-		when Symbol then list[s.to_s]
-		end                          
-	end                                  
+def Signal.sig s
+	case s  
+	when Fixnum then s
+	when String then list[s]
+	when Symbol then list[s.to_s]
+	end                          
+end                                  
 
-	list do |n, s|
-		Signal.const_set n, s
-		Signal.const_set "SIG#{n}", s
-	end                                  
+Signal.list do |n, s|
+	Signal.const_set n, s
+	Signal.const_set "SIG#{n}", s
+end                                  
 
-	def [] s
-		case s 
-		when String then list[s]
-		when Symbol then list[s.to_s]
-		when Fixnum then list.invert[s]
-		else raise ArgumentError       
-		end                            
-	end                                    
-end
+def Signal.[] s
+	case s 
+	when String then list[s]
+	when Symbol then list[s.to_s]
+	when Fixnum then list.invert[s]
+	else raise ArgumentError       
+	end                            
+end                                    
 
 class Retries
 	attr_accessor :max, :range
@@ -59,7 +57,6 @@ class RobustServer
 	end
 
 	def initialize *p
-		super *p
 		sh = method :signal_handler
 		@sigs = {
 			Signal[:INT] => sh, Signal[:HUP] => nil, Signal[:TERM] => sh,
