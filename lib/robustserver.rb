@@ -33,8 +33,8 @@ class Retries
 	attr_accessor :max, :range
 	attr_reader :count, :last
 
-	def initialize max = 10, range = 10
-		@max, @range, @count, @last = max, range, 0, Time.now
+	def initialize max = nil, range = nil
+		@max, @range, @count, @last = max || 10, range || 10, 0, Time.now
 	end
 
 	def retry?
