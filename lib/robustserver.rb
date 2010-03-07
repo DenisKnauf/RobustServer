@@ -52,6 +52,8 @@ class Retries
 end
 
 class RobustServer
+	attr_reader :signals
+
 	def self.main *argv
 		self.new( *argv).main
 	end
@@ -62,6 +64,7 @@ class RobustServer
 			Signal[:INT] => sh, Signal[:HUP] => nil, Signal[:TERM] => sh,
 			Signal[:KILL] => sh, Signal[:USR1] => nil, Signal[:USR2] => nil
 		}
+		@signals = []
 	end
 
 	def trapping
@@ -69,7 +72,8 @@ class RobustServer
 	end
 
 	def signal_handler s
-		@signal = s
+		s = s
+		@signals.push s  unless @signals.include? s
 	end
 
 	def main max = nil, range = nil
@@ -85,6 +89,7 @@ class RobustServer
 			retry  if retries.retry?
 			$stderr.print "Zuviele Fehler in zu kurzer Zeit.  Ich gebe auf und "
 		end
+		$stderr.puts "Unbeachtete Signale: #{@signals.map(&Signal.method(:[])).join( ', ')}"
 		trapping
 		$stderr.puts "Beende mich selbst."
 	end
