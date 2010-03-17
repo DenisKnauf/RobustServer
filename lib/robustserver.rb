@@ -31,24 +31,31 @@ def Signal.[] s
 	end                            
 end                                    
 
+# Description
+# ===========
+# 
 # Counts retries ot something.  If the retries are to often in a short time,
 # you shouldn't retry again.
 #
-# Example:
-# retries = Retry.new 5, 1
-# begin
-# 	array_of_ints_and_some_strings.each do |i|
-#			puts 2*i
-# 	end
-# rescue TypeError
-# 	retries.retry? and retry
-# 	raise $!
-# end
+# Examples
+# ========
+# 
+# Strings aren't Integers and 2*"Text" will raise TypeError.
 #
-# Retry.new( 10, 30).run( ConnectionLost) do
-# 	try_to_connect_to_db
-# 	try_query
-# end
+# 	retries = Retry.new 5, 1
+# 	begin
+# 		array_of_ints_and_some_strings.each do |i|
+# 			puts 2*i
+# 		end
+# 	rescue TypeError
+# 		retries.retry? and retry
+# 		raise $!
+# 	end
+#
+# 	Retry.new( 10, 30).run( ConnectionLost) do
+# 		try_to_connect_to_db
+# 		try_query
+# 	end
 class Retries
 	attr_accessor :max, :range
 	attr_reader :count, :last
