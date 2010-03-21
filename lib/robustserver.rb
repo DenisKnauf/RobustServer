@@ -144,6 +144,10 @@ class RobustServer
 		end
 		$stderr.puts "Unbeachtete Signale: #{@signals.map(&Signal.method(:[])).join( ', ')}"
 		trapping
+		self.at_exit
 		$stderr.puts "Beende mich selbst."
+	end
+
+	def at_exit
 	end
 end
