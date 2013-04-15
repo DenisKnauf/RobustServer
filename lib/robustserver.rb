@@ -153,7 +153,7 @@ class RobustServer
 			exit 2
 		end
 	ensure
-		output.puts "Disregarded signals: #{@signals.map(&Signal.method(:[])).join( ', ')}"
+		output.puts "Disregarded signals: #{@signals.map(&Signal.method(:[])).join( ', ')}"  unless @signals.empty?
 		trapping
 		self.at_exit
 		output.puts "Shutdown."
