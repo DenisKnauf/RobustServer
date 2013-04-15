@@ -104,6 +104,8 @@ end
 # Subclasses should implements *#run*,  which will be your main-worker.
 # For initializing,  you can override **#initialize**,  but doen't forget to call **super**.
 class RobustServer
+	class UnimplementedRun <Exception
+	end
 	attr_reader :signals, :output
 
 	def self.main *argv
@@ -135,6 +137,8 @@ class RobustServer
 		output.puts "Running...."
 		begin
 			self.run
+		rescue UnimplementedRun
+			raise
 		rescue SystemExit
 			output.puts "Server interrupted by signal: #$!"
 			raise
@@ -154,11 +158,7 @@ class RobustServer
 	end
 
 	def run
-		Kernel.loop &method( :loop)
-	end
-
-	def loop
-		raise Exception, "You must implement #{self.class.name}#run or #{self.class.name}#loop."
+		raise UnimplementedRun, "Unimplemented #{self.class.name}#run."
 	end
 
 	def at_exit
