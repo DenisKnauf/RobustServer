@@ -138,7 +138,8 @@ class RobustServer
 		begin
 			self.run
 		rescue UnimplementedRun
-			raise
+			output.puts $!.message
+			exit 1
 		rescue SystemExit
 			output.puts "Server interrupted by signal: #$!"
 			raise
@@ -149,6 +150,7 @@ class RobustServer
 			output.puts [:rescue, $!, $!.class, $!.backtrace].inspect
 			retry  if retries.retry?
 			output.print "Too many errors in too short time. Give up: "
+			exit 2
 		end
 	ensure
 		output.puts "Disregarded signals: #{@signals.map(&Signal.method(:[])).join( ', ')}"
