@@ -104,19 +104,19 @@ end
 # Subclasses should implements *#run*,  which will be your main-worker.
 # For initializing,  you can override **#initialize**,  but doen't forget to call **super**.
 class RobustServer
-	attr_reader :signals
+	attr_reader :signals, :output
 
 	def self.main *argv
 		self.new( *argv).main
 	end
 
-	def initialize *p
+	def initialize *_
 		sh = method :signal_handler
 		@sigs = {
 			Signal[:INT] => sh, Signal[:HUP] => nil, Signal[:TERM] => sh,
 			Signal[:KILL] => sh, Signal[:USR1] => nil, Signal[:USR2] => nil
 		}
-		@signals = []
+		@signals, @output = [], $stderr
 	end
 
 	def trapping
@@ -124,7 +124,7 @@ class RobustServer
 	end
 
 	def signal_handler s
-		$stderr.puts [:signal, s, Signal[s]].inspect
+		output.puts [:signal, s, Signal[s]].inspect
 		s = s
 		@signals.push s  unless @signals.include? s
 	end
@@ -132,20 +132,33 @@ class RobustServer
 	def main max = nil, range = nil
 		retries = Retries.new max, range
 		trapping
-		$stderr.puts "Arbeit wird nun aufgenommen..."
+		output.puts "Running...."
 		begin
 			self.run
-		rescue SystemExit, Interrupt, SignalException
-			$stderr.puts "Das Beenden des Programms wurde angefordert. #{$!}"
+		rescue SystemExit
+			output.puts "Server interrupted by signal: #$!"
+			raise
+		rescue Interrupt, SignalException
+			output.puts "Server interrupted by signal: #$!"
+			exit 0
 		rescue Object
-			$stderr.puts [:rescue, $!, $!.class, $!.backtrace].inspect
+			output.puts [:rescue, $!, $!.class, $!.backtrace].inspect
 			retry  if retries.retry?
-			$stderr.print "Zuviele Fehler in zu kurzer Zeit.  Ich gebe auf und "
+			output.print "Too many errors in too short time. Give up: "
 		end
-		$stderr.puts "Unbeachtete Signale: #{@signals.map(&Signal.method(:[])).join( ', ')}"
+	ensure
+		output.puts "Disregarded signals: #{@signals.map(&Signal.method(:[])).join( ', ')}"
 		trapping
 		self.at_exit
-		$stderr.puts "Beende mich selbst."
+		output.puts "Shutdown."
+	end
+
+	def run
+		Kernel.loop &method( :loop)
+	end
+
+	def loop
+		raise Exception, "You must implement #{self.class.name}#run or #{self.class.name}#loop."
 	end
 
 	def at_exit
