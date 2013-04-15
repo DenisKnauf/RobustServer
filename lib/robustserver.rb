@@ -127,7 +127,6 @@ class RobustServer
 
 	def signal_handler s
 		output.puts [:signal, s, Signal[s]].inspect
-		s = s
 		@signals.push s  unless @signals.include? s
 	end
 
