@@ -1,10 +1,5 @@
-Usage
-=====
+Repository moved to git.denkn.at
+================================
 
-	class MyServer < RobustServer
-		def run
-			# something to do...
-		end
-	end
-	
-	MyServer.new.main
+This repository is moved to https://git.denkn.at/deac/RobustServer/
+Please visit the new Repository.
